@@ -32,10 +32,11 @@ def seed_everything(seed):
 
 
 def stochastic_sample_from_categorical(logits, temperature=1.0, noise_scale=1.0):
-    logits = logits.double()
+    dtype = logits.dtype
+    logits = logits.to(torch.float64)
     if temperature != 0:
-        gumbel_noise = -torch.log(-torch.log(torch.rand_like(logits) + 1e-8) + 1e-8)
+        gumbel_noise = -torch.log(-torch.log(torch.rand_like(logits, dtype=torch.float64) + 1e-8) + 1e-8)
         logits = logits / temperature + noise_scale * gumbel_noise
     scores, tokens = logits.log_softmax(dim=-1).max(dim=-1)
-    return tokens, scores, logits
+    return tokens, scores.to(dtype), logits.to(dtype)
 

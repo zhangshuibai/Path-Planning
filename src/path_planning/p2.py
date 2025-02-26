@@ -10,7 +10,7 @@ from path_planning.score_function import logP, random_score
 def p2_sampling(
     xt: torch.Tensor,
     model: Any,
-    tokenizer: Any,
+    mask_id: int,
     num_steps: int,
     tau: float = 1.0,
     kappa_fn: Callable = lambda t: t,
@@ -24,24 +24,24 @@ def p2_sampling(
     Args:
         xt: Input tensor with masked tokens
         model: Main model for generating logits
-        tokenizer: Tokenizer with mask_token_id attribute
+        mask_id: ID of the mask token
         num_steps: Number of sampling steps
         tau: Temperature parameter for sampling
         kappa_fn: Function to compute kappa at each timestep
         eta: Scaling factor for unmask scores
         planner: Optional planner model
-        score_type: Type of scoring ('confidence' or 'random')
+        score_fn: Scoring function for token selection
     
     Returns:
         Sampled sequence tensor
     """
     dt = 1/num_steps
-    fix_mask = xt != tokenizer.mask_token_id
+    fix_mask = xt != mask_id
     
     for i in tqdm(range(1, num_steps+1)):
         kappa_t = kappa_fn(i*dt)
         logits = model(xt).double()
-        last_mask = xt == tokenizer.mask_token_id
+        last_mask = xt == mask_id
         unmask_t = ~last_mask & ~fix_mask
         
         x0, logp, logits = stochastic_sample_from_categorical(logits, temperature=tau)
@@ -59,11 +59,11 @@ def p2_sampling(
         lowest_k_mask = topk_lowest_masking(score, num_to_mask)
         to_mask = lowest_k_mask
         
-        xt[to_mask] = tokenizer.mask_token_id
+        xt[to_mask] = mask_id
         mask_2_x0 = last_mask & ~lowest_k_mask
         xt[mask_2_x0] = x0[mask_2_x0]
     # Fill any remaining masks
-    xt[xt == tokenizer.mask_token_id] = x0[xt == tokenizer.mask_token_id]
+    xt[xt == mask_id] = x0[xt == mask_id]
     return xt 
 
 from functools import partial

@@ -107,7 +107,7 @@ def generate_sequences(
     sampled_xt = p2_sampling(
         xt=xt,
         model=model_wrapper,
-        tokenizer=tokenizer,
+        mask_id=tokenizer.mask_token_id,
         num_steps=num_steps,
         tau=temperature,
         eta=eta,
