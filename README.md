@@ -1,6 +1,15 @@
-# Path Planning
+# P2 Sampling
 
-A Python package for sequence generation using P2 (Path Planning) sampling.
+A Python package implementing [P2 (Path Planning)](https://arxiv.org/pdf/2502.03540), a masked diffusion model sampling method for sequence generation. This repository provides a flexible implementation that can be applied to various domains, with example implementations for protein sequence generation and text generation.
+
+## Overview
+
+P2 sampling is a diffusion-based sampling method that starts from a fully masked sequence and progressively unmasks tokens based on model confidence. This approach provides more coherent and high-quality sequences compared to traditional autoregressive generation methods.
+
+Key advantages of P2 sampling:
+- Non-autoregressive generation with bidirectional context
+- Controllable generation process through various parameters
+- Applicable to various sequence domains (protein, text, etc.)
 
 ## Installation
 
@@ -8,36 +17,22 @@ A Python package for sequence generation using P2 (Path Planning) sampling.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/path_planning.git
+git clone git@github.com:pengzhangzhi/path_planning.git
 cd path_planning
 
 # Install the package
 pip install -e .
 ```
 
-### With ESMFold Support
+## Examples
 
-To use the ESMFold evaluation functionality in the protein examples, install the package with the additional dependencies:
+This repository includes example implementations for two domains:
 
-```bash
-# Install the package with ESMFold support
-pip install -e ".[protein]"
-```
+### 1. Protein Sequence Generation
 
-Alternatively, you can install the ESMFold dependencies manually:
+The protein example demonstrates how to generate novel protein sequences using P2 sampling with ESM-2 models and evaluate their quality using ESMFold.
 
-```bash
-# Install ESMFold and its dependencies
-pip install "fair-esm[esmfold]"
-
-# Install OpenFold and its remaining dependencies
-pip install 'dllogger @ git+https://github.com/NVIDIA/dllogger.git'
-pip install 'openfold @ git+https://github.com/aqlaboratory/openfold.git@4b41059694619831a7db195b7e0988fc4ff3a307'
-```
-
-## Usage
-
-### Protein Sequence Generation
+#### Running the Protein Example
 
 ```bash
 # Basic generation
@@ -46,45 +41,67 @@ python examples/protein/generate.py --num_seqs 10 --seq_len 128
 # With ESMFold evaluation
 python examples/protein/generate.py --num_seqs 10 --seq_len 128 --esmfold_eval --save_dir results/test_run
 
-# With ESMFold options
-python examples/protein/generate.py --num_seqs 10 --esmfold_eval --max_tokens_per_batch 512 --num_recycles 4
 
-# CPU options for ESMFold
-python examples/protein/generate.py --esmfold_eval --cpu_only  # or --cpu_offload
+#### Jupyter Notebook
+
+For an interactive demonstration, you can also use the Jupyter notebook:
+```
+examples/protein/p2_sampling_demo.ipynb
 ```
 
-### Command-line Arguments
+### 2. Text Generation (LLaDA)
 
-- `--model_name`: ESM2 model name (default: "facebook/esm2_t6_8M_UR50D")
-- `--num_seqs`: Number of sequences to generate (default: 100)
-- `--seq_len`: Length of sequences to generate (default: 128)
-- `--num_steps`: Number of P2 sampling steps (default: 128)
-- `--temperature`: Sampling temperature (default: 1.0)
-- `--eta`: Stochasticity strength (0: deterministic, 1: default, >1: more stochastic) (default: 1.0)
-- `--seed`: Random seed for reproducibility (default: 42)
-- `--save_dir`: Directory to save generated sequences (default: 'generation-results')
-- `--esmfold_eval`: Run ESMFold evaluation (default: False)
-- `--max_tokens_per_batch`: Maximum tokens per batch for ESMFold evaluation (default: 1024)
-- `--num_recycles`: Number of recycles for ESMFold (default: None)
-- `--cpu_only`: Use CPU only for ESMFold (default: False)
-- `--cpu_offload`: Enable CPU offloading for ESMFold (default: False)
+The text example implements [LLaDA](https://arxiv.org/abs/2502.09992), a diffusion-based text generation approach using language models.
+
+#### Running the Text Example
+
+```bash
+# Navigate to the text example directory
+cd examples/text/LLaDA
+
+# Run the generation script
+python generate.py
+```
+
+#### Chat Example
+
+```bash
+cd examples/text/LLaDA
+python chat.py
+```
 
 ## API Usage
 
+You can use the P2 sampling functionality programmatically in your own projects:
+
 ```python
 from path_planning import p2_sampling, seed_everything
+from path_planning.scheduler import sine_scheduler
+from path_planning.score_function import logP
 
 # Set random seed for reproducibility
 seed_everything(42)
 
+# Create a model wrapper that returns logits
+class ModelWrapper:
+    def __init__(self, model):
+        self.model = model
+        
+    def __call__(self, x):
+        return self.model(x).logits
+
+# Initialize your model and wrapper
+model_wrapper = ModelWrapper(your_model)
+
 # Use P2 sampling in your code
 sampled_sequence = p2_sampling(
-    xt=initial_sequence,
+    xt=initial_masked_sequence,
     model=model_wrapper,
-    tokenizer=tokenizer,
+    mask_id=your_mask_token_id,
     num_steps=128,
     tau=1.0,
+    kappa_fn=sine_scheduler,
     eta=1.0,
-    score_type='confidence'
+    score_fn=logP
 )
-``` 
+```
