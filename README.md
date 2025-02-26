@@ -70,6 +70,9 @@ python generate.py
 cd examples/text/LLaDA
 python chat.py
 ```
+Here is an example of our chat history:
+
+![alt text](assets/chat_example.png)
 
 ## API Usage
 
