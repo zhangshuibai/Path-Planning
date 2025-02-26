@@ -40,12 +40,13 @@ python examples/protein/generate.py --num_seqs 10 --seq_len 128
 
 # With ESMFold evaluation
 python examples/protein/generate.py --num_seqs 10 --seq_len 128 --esmfold_eval --save_dir results/test_run
-
+```
 
 #### Jupyter Notebook
 
 For an interactive demonstration, you can also use the Jupyter notebook:
-```
+
+```bash
 examples/protein/p2_sampling_demo.ipynb
 ```
 
