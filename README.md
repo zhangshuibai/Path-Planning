@@ -83,15 +83,9 @@ from path_planning.score_function import logP
 # Set random seed for reproducibility
 seed_everything(42)
 
-# Create a model wrapper that returns logits
-class ModelWrapper:
-    def __init__(self, model):
-        self.model = model
-        
-    def __call__(self, x):
-        return self.model(x).logits
+# Create a model decorator that makes the model return logits
+ModelWrapper = lambda model: lambda x: model(x).logits
 
-# Initialize your model and wrapper
 model_wrapper = ModelWrapper(your_model)
 
 # Use P2 sampling in your code
