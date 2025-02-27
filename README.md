@@ -4,10 +4,10 @@ A Python package implementing [P2 (Path Planning)](https://arxiv.org/pdf/2502.03
 
 ## Overview
 
-P2 sampling is a diffusion-based sampling method that starts from a fully masked sequence and progressively unmasks tokens based on model confidence. This approach provides more coherent and high-quality sequences compared to traditional autoregressive generation methods.
+P2 sampling is a diffusion-based sampling method that starts from a fully masked sequence and progressively unmasks tokens based on model confidence. 
 
 Key advantages of P2 sampling:
-- Non-autoregressive generation with bidirectional context
+- Simple implementation
 - Controllable generation process through various parameters
 - Applicable to various sequence domains (protein, text, etc.)
 
@@ -70,7 +70,7 @@ python generate.py
 cd examples/text/LLaDA
 python chat.py
 ```
-Here is an example of our chat history:
+Here is an example of my chat history:
 
 ![alt text](assets/chat_example.png)
 
@@ -103,3 +103,27 @@ sampled_sequence = p2_sampling(
     score_fn=logP
 )
 ```
+
+## Appreciation
+
+The code is based on the following repository:
+
+- [DPLM](https://github.com/bytedance/dplm)
+- [LLaDA](https://github.com/ML-GSAI/LLaDA)
+
+
+## Citation
+
+
+```bibtex
+@misc{peng2025pathplanningmaskeddiffusion,
+      title={Path Planning for Masked Diffusion Model Sampling}, 
+      author={Fred Zhangzhi Peng and Zachary Bezemek and Sawan Patel and Jarrid Rector-Brooks and Sherwood Yao and Alexander Tong and Pranam Chatterjee},
+      year={2025},
+      eprint={2502.03540},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2502.03540}, 
+}
+```
+
