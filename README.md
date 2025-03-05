@@ -4,11 +4,11 @@ A Python package implementing [P2 (Path Planning)](https://arxiv.org/pdf/2502.03
 
 ## Overview
 
-P2 sampling is a diffusion-based sampling method that starts from a fully masked sequence and progressively unmasks tokens based on model confidence. 
+P2 sampling is a drop-in masked diffusion model sampler. 
 
-Key advantages of P2 sampling:
-- Simple implementation
-- Controllable generation process through various parameters
+Key advantages of P2:
+- Simple implementation. The core code is less than 100 LOC.
+-  Modular Components for plug-and-play experimentation.
 - Applicable to various sequence domains (protein, text, etc.)
 
 ## Installation
