@@ -80,7 +80,6 @@ You can use the P2 sampling functionality programmatically in your own projects:
 
 ```python
 from path_planning import p2_sampling, seed_everything
-from path_planning.scheduler import sine_scheduler
 from path_planning.score_function import logP
 
 # Set random seed for reproducibility
@@ -98,7 +97,6 @@ sampled_sequence = p2_sampling(
     mask_id=your_mask_token_id,
     num_steps=128,
     tau=1.0,
-    kappa_fn=sine_scheduler,
     eta=1.0,
     score_fn=logP
 )
@@ -113,7 +111,6 @@ The code is based on the following repository:
 
 
 ## Citation
-
 
 ```bibtex
 @misc{peng2025pathplanningmaskeddiffusion,
