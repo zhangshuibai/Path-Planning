@@ -336,3 +336,15 @@ if __name__ == "__main__":
     set_seed(1234)
     cli_evaluate()
     
+"""
+
+CUDA_VISIBLE_DEVICES=1 HF_ALLOW_CODE_EVAL=1 \
+python eval_lm_harness.py \
+--tasks gsm8k \
+--model llada_dist \
+--confirm_run_unsafe_code \
+--batch_size 12 \
+--output_path ./results/gsm8k/ \
+--model_args model_path="GSAI-ML/LLaDA-8B-Base",mc_num=12,num_steps=256,tau=0.0,max_length=256,eta=1.0
+
+"""
